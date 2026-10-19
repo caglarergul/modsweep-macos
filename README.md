@@ -41,6 +41,7 @@ brew uninstall --cask --zap modsweep           # remove the app and its data
 | **Scan** | Finds the JavaScript projects in a folder and shows how much space each `node_modules` takes, the package manager, last activity and git state, plus npm/pnpm/yarn/bun caches and free disk. The total sits in the menu bar. |
 | **Analyze** | Finds install and run problems before they hit you — lockfiles out of sync, two lockfiles, Node version mismatches, `node-sass`, old webpack on new Node, Next 16 with a webpack config, Prisma, missing `.env`, Stencil store problems … — and suggests a fix for each. |
 | **Clean** | Moves the `node_modules` folders you pick to the **Trash**, so you can put them back. Folders with a running Node process or files tracked by git are left alone. |
+| **Share** | npm and yarn put a full copy of every package into every project. modsweep shows which versions repeat across your projects and moves the ones you pick to **one shared pnpm store** on this Mac, so each version is kept once. Only two local files are added (listed in `.git/info/exclude`): nothing changes for git or your team. Every project is backed up first and rolled back on any error, the old `node_modules` goes to the Trash, and you can go back to npm/yarn any time. Needs pnpm 10 or newer. |
 | **Install & verify** | Installs the selected projects and checks dependencies, commands, typecheck, build and optionally a dev server — with a live log, a Stop button and everything restored afterwards. |
 
 Available in **English, Türkçe, Deutsch and Español** (Settings → Language).
