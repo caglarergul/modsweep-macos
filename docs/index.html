@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>modsweep for Mac</title>
+<meta name="description" content="A Mac app for folders full of JavaScript projects: see what node_modules costs, find why a project won't install, clean safely and share one pnpm store.">
+<meta property="og:title" content="modsweep for Mac">
+<meta property="og:description" content="One copy of every package, not one per project. Scan, analyze, clean and share node_modules safely.">
+<meta property="og:image" content="https://caglarergul.github.io/modsweep-macos/assets/projects.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F7F6FB;
+  --surface: #FFFFFF;
+  --ink: #1C1530;
+  --ink-soft: #5B5470;
+  --line: #E3DEF0;
+  --violet: #7C3AED;
+  --violet-deep: #4C1D95;
+  --lilac: #ECE6FD;
+  --amber: #B45309;
+  --green: #15803D;
+  --band: #1C1530;
+  --band-text: #EEEAF8;
+  --band-soft: #B9B1D3;
+  --shot-edge: #D6CFEA;
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15111F;
+    --surface: #1E1830;
+    --ink: #EEEAF8;
+    --ink-soft: #ADA5C6;
+    --line: #2F2745;
+    --violet: #A78BFA;
+    --violet-deep: #C4B5FD;
+    --lilac: #2A2142;
+    --amber: #F59E0B;
+    --green: #4ADE80;
+    --band: #0F0C18;
+    --shot-edge: #33294D;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 17px/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--violet); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; border-radius: 6px; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+.wrap { width: min(1160px, 100% - 40px); margin-inline: auto; }
+/* grid children may shrink below their longest line (commands, paths) */
+.hero > *, .feature > *, .pair > *, .install > *, .rules > * { min-width: 0; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0; }
+.brand img { height: 30px; width: auto; }
+.brand .dark { display: none; }
+@media (prefers-color-scheme: dark) { .brand .light { display: none; } .brand .dark { display: block; } }
+.top nav { display: flex; align-items: center; gap: 22px; font-size: 15px; }
+.top nav a { color: var(--ink-soft); text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+.langs { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.langs button {
+  font: 500 13px/1 var(--body); color: var(--ink-soft); background: none; border: 0;
+  padding: 7px 10px; border-radius: 999px; cursor: pointer;
+}
+.langs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+@media (max-width: 760px) { .top nav .nav-link { display: none; } }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; padding: 56px 0 72px; }
+.hero h1 {
+  font: 800 clamp(40px, 6vw, 72px)/0.98 var(--display);
+  letter-spacing: -0.035em; margin: 0 0 24px; text-wrap: balance;
+}
+.lead { font-size: 19px; color: var(--ink-soft); max-width: 34em; margin: 0 0 32px; text-wrap: pretty; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
+.download {
+  display: inline-flex; align-items: center; gap: 10px; padding: 15px 24px; border-radius: 12px;
+  background: var(--violet); color: #fff; font: 600 17px/1 var(--body); text-decoration: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 6px 16px -10px rgba(20,16,30,.55);
+}
+@media (prefers-color-scheme: dark) { .download { background: #7C3AED; } }
+.download:hover { filter: brightness(1.08); }
+.download svg { width: 18px; height: 18px; }
+.fine { font-size: 14px; color: var(--ink-soft); }
+.brew { margin-top: 26px; }
+.brew-label { font-size: 14px; color: var(--ink-soft); margin: 0 0 8px; }
+.cmd {
+  display: flex; align-items: center; gap: 12px; max-width: 520px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 6px 6px 16px;
+}
+.cmd code { flex: 1; overflow-x: auto; white-space: nowrap; font-size: 14px; }
+.cmd code::before { content: "$ "; color: var(--ink-soft); }
+.copy {
+  font: 500 13px/1 var(--body); color: var(--ink); background: var(--lilac); border: 0;
+  padding: 9px 12px; border-radius: 7px; cursor: pointer; flex: none;
+}
+
+/* the sweep: copies of one package fold into the shared store */
+.sweep {
+  position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+  padding: 26px 26px 22px; box-shadow: 0 30px 60px -40px rgba(28,21,48,.45);
+}
+.sweep-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.sweep-head strong { font: 700 15px/1.3 var(--display); }
+.sweep-head .size { font: 500 14px/1 var(--mono); color: var(--amber); transition: color .4s; }
+.sweep.done .sweep-head .size { color: var(--green); }
+.rows { position: relative; height: calc(5 * 46px); }
+.row {
+  position: absolute; left: 0; right: 0; height: 40px; display: flex; align-items: center; gap: 12px;
+  padding: 0 14px; border-radius: 9px; background: var(--paper); border: 1px solid var(--line);
+  font: 400 13.5px/1 var(--mono); white-space: nowrap; overflow: hidden;
+  top: calc(var(--i) * 46px);
+  transition: top .7s cubic-bezier(.6,.05,.3,1), height .7s cubic-bezier(.6,.05,.3,1), opacity .5s ease, background .4s, border-color .4s;
+  transition-delay: calc(var(--i) * 70ms);
+}
+.row .path { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; }
+.row .pkg { color: var(--ink); margin-left: auto; }
+.row .ver { color: var(--violet); }
+.row .link { position: absolute; right: 14px; opacity: 0; color: var(--violet); font: 500 12.5px/1 var(--body); transition: opacity .4s; }
+.sweep.done .row { top: calc(54px + var(--i) * 35px); height: 30px; background: transparent; border-color: transparent; border-left: 2px solid var(--lilac); border-radius: 0; color: var(--ink-soft); }
+.sweep.done .row .pkg { opacity: 0; }
+.sweep.done .row .link { opacity: 1; transition-delay: .6s; }
+.sweep.done .row.store { top: 0; height: 40px; opacity: 1; background: var(--lilac); border: 1px solid transparent; border-radius: 9px; }
+.sweep.done .row.store .pkg { opacity: 1; }
+.row .pkg { transition: opacity .3s; }
+.row.store { opacity: 0; z-index: 2; }
+.row.store .path { color: var(--violet-deep); font-weight: 500; }
+.sweep-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; min-height: 30px; }
+.sweep-foot p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.replay {
+  font: 500 13px/1 var(--body); background: none; border: 1px solid var(--line); color: var(--ink-soft);
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .row { transition: none; } }
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 44px; padding-top: 28px; }
+}
+@media (max-width: 520px) { .row .path { max-width: 46%; } }
+
+/* screenshots */
+.shot {
+  border-radius: 14px; overflow: hidden; border: 1px solid var(--shot-edge);
+  box-shadow: 0 40px 80px -50px rgba(28,21,48,.6); background: #222128;
+}
+.wide { margin: 0 0 120px; }
+
+/* features */
+section { scroll-margin-top: 20px; }
+h2 { font: 800 clamp(32px, 4.2vw, 50px)/1.02 var(--display); letter-spacing: -0.03em; margin: 0 0 16px; text-wrap: balance; }
+h3 { font: 700 24px/1.15 var(--display); letter-spacing: -0.015em; margin: 0 0 12px; }
+.section-lead { color: var(--ink-soft); font-size: 18px; max-width: 36em; margin: 0 0 56px; }
+.feature { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 56px; align-items: center; margin-bottom: 96px; }
+.feature.flip { grid-template-columns: 1.2fr 0.8fr; }
+.feature.flip .text { order: 2; }
+.feature .name { font: 600 14px/1 var(--body); color: var(--violet); margin: 0 0 12px; }
+.feature p { color: var(--ink-soft); margin: 0; max-width: 32em; }
+.pair { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; padding: 48px 0 0; border-top: 1px solid var(--line); margin-bottom: 120px; }
+.pair p { color: var(--ink-soft); margin: 0; }
+@media (max-width: 900px) {
+  .feature, .feature.flip { grid-template-columns: 1fr; gap: 28px; margin-bottom: 72px; }
+  .feature.flip .text { order: 0; }
+  .pair { grid-template-columns: 1fr; gap: 36px; }
+}
+
+/* safety band */
+.band { background: var(--band); color: var(--band-text); padding: 110px 0; }
+.band h2 { color: #fff; max-width: 15em; }
+.band .section-lead { color: var(--band-soft); }
+.rules { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 34px 56px; }
+.rules li { display: grid; grid-template-columns: 26px 1fr; gap: 14px; }
+.rules svg { width: 22px; height: 22px; margin-top: 3px; color: #A78BFA; }
+.rules strong { display: block; color: #fff; font-weight: 600; margin-bottom: 4px; }
+.rules span { color: var(--band-soft); }
+@media (max-width: 760px) { .rules { grid-template-columns: 1fr; } .band { padding: 80px 0; } }
+
+/* install */
+.install { padding: 110px 0 90px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.install h3 { font-size: 20px; }
+.install p { color: var(--ink-soft); margin: 0 0 18px; }
+pre {
+  margin: 0 0 18px; padding: 18px 20px; overflow-x: auto; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line); font: 400 14px/1.75 var(--mono);
+}
+pre .c { color: var(--ink-soft); }
+.icon-row { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+.icon-row img { width: 76px; height: 76px; }
+.version { font: 500 14px/1 var(--mono); color: var(--ink-soft); }
+@media (max-width: 860px) { .install { grid-template-columns: 1fr; gap: 48px; padding-top: 80px; } }
+
+footer { border-top: 1px solid var(--line); padding: 34px 0 48px; font-size: 14px; color: var(--ink-soft); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; }
+footer p { margin: 0; max-width: 46em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./" aria-label="modsweep">
+      <img class="light" src="assets/wordmark.png" alt="modsweep" width="153" height="30">
+      <img class="dark" src="assets/wordmark-dark.png" alt="modsweep" width="149" height="30">
+    </a>
+    <nav>
+      <a class="nav-link" href="#features" data-i18n="nav.features">Features</a>
+      <a class="nav-link" href="#safety" data-i18n="nav.safety">Safety</a>
+      <a class="nav-link" href="#install" data-i18n="nav.install">Install</a>
+      <div class="langs" role="group" aria-label="Language">
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="tr" lang="tr">TR</button>
+        <button type="button" data-lang="de" lang="de">DE</button>
+        <button type="button" data-lang="es" lang="es">ES</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1 data-i18n="hero.title">One copy of every package. Not one per project.</h1>
+        <p class="lead" data-i18n="hero.lead">modsweep is a Mac app for a folder full of JavaScript projects. It shows what node_modules costs you, finds why a project won't install, cleans safely, and lets npm and yarn projects share one pnpm store.</p>
+        <div class="actions">
+          <a class="download" id="download" href="https://github.com/caglarergul/modsweep-macos/releases/latest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+            <span data-i18n="cta.download">Download for Mac</span>
+          </a>
+          <span class="fine" data-i18n="cta.fine">Free, for macOS 14 Sonoma or later on Apple Silicon and Intel.</span>
+        </div>
+        <div class="brew">
+          <p class="brew-label" data-i18n="cta.brew">Or install it with Homebrew:</p>
+          <div class="cmd">
+            <code id="brew-cmd">brew install --cask caglarergul/tap/modsweep</code>
+            <button class="copy" type="button" data-copy="brew-cmd" data-i18n="copy">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <figure class="sweep" id="sweep" aria-labelledby="sweep-caption" style="margin:0">
+        <div class="sweep-head">
+          <strong>react-dom <span class="mono" style="font-weight:400">18.3.1</span></strong>
+          <span class="size" id="sweep-size">21 MB</span>
+        </div>
+        <div class="rows" aria-hidden="true">
+          <div class="row" style="--i:0"><span class="path">~/Developer/storefront/node_modules</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span><span class="link" data-i18n="sweep.link">uses the shared copy</span></div>
+          <div class="row" style="--i:1"><span class="path">~/Developer/marketing-site/node_modules</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span><span class="link" data-i18n="sweep.link">uses the shared copy</span></div>
+          <div class="row" style="--i:2"><span class="path">~/Developer/docs-portal/node_modules</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span><span class="link" data-i18n="sweep.link">uses the shared copy</span></div>
+          <div class="row" style="--i:3"><span class="path">~/Developer/admin-dashboard/node_modules</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span><span class="link" data-i18n="sweep.link">uses the shared copy</span></div>
+          <div class="row" style="--i:4"><span class="path">~/Developer/checkout-widget/node_modules</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span><span class="link" data-i18n="sweep.link">uses the shared copy</span></div>
+          <div class="row store" style="--i:0"><span class="path" data-i18n="sweep.store">Shared pnpm store on this Mac</span><span class="pkg">react-dom <span class="ver">18.3.1</span></span></div>
+        </div>
+        <div class="sweep-foot">
+          <p id="sweep-caption" data-i18n="sweep.before">Five projects, five full copies.</p>
+          <button class="replay" type="button" id="replay" data-i18n="sweep.replay">Play again</button>
+        </div>
+      </figure>
+    </section>
+
+    <figure class="shot wide" style="margin-inline:0">
+      <img src="assets/projects.png" width="1600" height="544" alt="" data-i18n-alt="shot.projects">
+    </figure>
+
+    <section id="features">
+      <h2 data-i18n="features.title">Everything node_modules does to your disk, in one window.</h2>
+      <p class="section-lead" data-i18n="features.lead">Point modsweep at the folder that holds your projects. It scans them, explains them and cleans up after them.</p>
+
+      <div class="feature">
+        <div class="text">
+          <p class="name" data-i18n="f.share.name">Share</p>
+          <h3 data-i18n="f.share.title">Keep each package version once</h3>
+          <p data-i18n="f.share.text">npm and yarn put a full copy of every package into every project. modsweep shows which versions repeat across your projects and moves the ones you pick to one shared pnpm store. Only two local files are added and git never sees them, every project is backed up first, and you can go back to npm or yarn any time.</p>
+        </div>
+        <figure class="shot" style="margin:0"><img src="assets/sharing.png" width="1600" height="618" alt="" data-i18n-alt="shot.sharing" loading="lazy"></figure>
+      </div>
+
+      <div class="feature flip">
+        <div class="text">
+          <p class="name" data-i18n="f.analyze.name">Analyze</p>
+          <h3 data-i18n="f.analyze.title">Know why a project won't install before you try</h3>
+          <p data-i18n="f.analyze.text">Lockfiles out of sync, two lockfiles, the wrong Node version, node-sass, old webpack on new Node, Next 16 with a webpack config, Prisma, a missing .env, Stencil store problems. Every finding comes with its fix.</p>
+        </div>
+        <figure class="shot" style="margin:0"><img src="assets/analysis.png" width="1600" height="865" alt="" data-i18n-alt="shot.analysis" loading="lazy"></figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <h3 data-i18n="f.scan.title">See every project at a glance</h3>
+          <p data-i18n="f.scan.text">Size of each node_modules, package manager, last activity and git state, plus your npm, pnpm, yarn and bun caches. The total sits in the menu bar.</p>
+        </div>
+        <div>
+          <h3 data-i18n="f.clean.title">Free space without losing anything</h3>
+          <p data-i18n="f.clean.text">The node_modules folders you pick go to the Trash, and Undo puts them back. Folders with a running Node process or files tracked by git are left alone.</p>
+        </div>
+        <div>
+          <h3 data-i18n="f.verify.title">Check that a project still builds</h3>
+          <p data-i18n="f.verify.text">Installs the selected projects and checks dependencies, commands, typecheck, build and optionally a dev server, with a live log and a Stop button. Every file is put back afterwards.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<section class="band" id="safety">
+  <div class="wrap">
+    <h2 data-i18n="safety.title">Made for projects that are wired to real systems.</h2>
+    <p class="section-lead" data-i18n="safety.lead">Testing a project should never touch production. These rules are always on.</p>
+    <ul class="rules">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s1.t">Nothing is pushed or deployed</strong><span data-i18n="s1.d">Scripts that mention deploy, publish, push, migrate, vercel or shopify never run during a test.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s2.t">Databases stay out of reach</strong><span data-i18n="s2.d">Database, Redis and Mongo addresses from .env files point nowhere while a test runs.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s3.t">Your files come back</strong><span data-i18n="s3.d">package.json, lockfiles and the git state are backed up before a test or a move and restored afterwards, also when you press Stop.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s4.t">Crash-safe</strong><span data-i18n="s4.d">If the Mac or the app stops halfway, modsweep restores the project on the next launch before it does anything else.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s5.t">No process is left behind</strong><span data-i18n="s5.d">Test servers are stopped by process tree and by folder.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><strong data-i18n="s6.t">Nothing is deleted for good</strong><span data-i18n="s6.d">Clean moves folders to the Trash. Shared projects can go back to npm or yarn at any time.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="install" id="install">
+    <div>
+      <div class="icon-row">
+        <img src="assets/icon-512.png" width="76" height="76" alt="">
+        <div>
+          <h2 style="margin:0 0 6px" data-i18n="install.title">Install</h2>
+          <span class="version" id="version"></span>
+        </div>
+      </div>
+      <p data-i18n="install.dmg">Download the DMG from the latest release, open it and drag modsweep to Applications. Every build is signed with Developer ID and notarized by Apple, so it opens without warnings.</p>
+      <p><a id="download-2" href="https://github.com/caglarergul/modsweep-macos/releases/latest" data-i18n="install.releases">All releases on GitHub</a></p>
+      <h3 data-i18n="install.req.title">Requirements</h3>
+      <p data-i18n="install.req">macOS 14 Sonoma or later. Installing and verifying projects needs pnpm; moving projects to the shared store needs pnpm 10 or newer. npm, yarn and bun projects are all supported.</p>
+    </div>
+    <div>
+      <h3>Homebrew</h3>
+<pre><span class="c" data-i18n="brew.install"># install</span>
+brew install --cask caglarergul/tap/modsweep
+<span class="c" data-i18n="brew.update"># update</span>
+brew upgrade --cask modsweep
+<span class="c" data-i18n="brew.remove"># remove the app and its data</span>
+brew uninstall --cask --zap modsweep</pre>
+      <h3 data-i18n="privacy.title">Privacy</h3>
+      <p data-i18n="privacy.text">No account, no analytics, no tracking. modsweep goes online only to install packages when you ask it to and, if you leave it on, to check Stencil stores during an analysis.</p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><span data-i18n="footer.disclaimer">modsweep is free and provided as is, without warranty. You use it at your own risk; keep backups and version control.</span> <a id="disclaimer" href="https://github.com/caglarergul/modsweep-macos/blob/main/DISCLAIMER.md" data-i18n="footer.read">Read the disclaimer</a></p>
+    <p>Copyright © 2026 Caglar Ergul. <span data-i18n="footer.rights">All rights reserved.</span></p>
+  </div>
+</footer>
+
+<script>
+const T = {
+  en: {},
+  tr: {
+    "nav.features": "Özellikler", "nav.safety": "Güvenlik", "nav.install": "Kurulum",
+    "hero.title": "Her paketten tek kopya. Her projeye ayrı değil.",
+    "hero.lead": "modsweep, içinde JavaScript projeleri dolu bir klasör için Mac uygulaması. node_modules'un sana neye mal olduğunu gösterir, bir projenin neden kurulmayacağını bulur, güvenle temizler ve npm ile yarn projelerinin tek bir pnpm deposunu paylaşmasını sağlar.",
+    "cta.download": "Mac için indir",
+    "cta.fine": "Ücretsiz; macOS 14 Sonoma veya üstü, Apple Silicon ve Intel.",
+    "cta.brew": "Ya da Homebrew ile kur:",
+    "copy": "Kopyala", "copied": "Kopyalandı",
+    "sweep.store": "Bu Mac'teki ortak pnpm deposu",
+    "sweep.before": "Beş proje, beş tam kopya.",
+    "sweep.after": "Ortak depoda tek kopya.",
+    "sweep.replay": "Tekrar oynat", "sweep.link": "ortak kopyayı kullanıyor",
+    "shot.projects": "modsweep Projeler ekranı: sekiz proje; boyutları, sorunları, paket yöneticileri ve git durumlarıyla",
+    "shot.sharing": "Paylaşım ekranı: projeler arasında tekrar eden paket sürümleri ve ortak depoyla ne kadar yer kalacağı",
+    "shot.analysis": "Analiz ekranı: node-sass ve eski webpack gibi bulgular, her birinin çözümüyle",
+    "features.title": "node_modules'un diskine yaptığı her şey, tek pencerede.",
+    "features.lead": "modsweep'i projelerinin durduğu klasöre yönlendir. Onları tarar, açıklar ve arkalarını toplar.",
+    "f.share.name": "Paylaş",
+    "f.share.title": "Her paket sürümünü bir kez tut",
+    "f.share.text": "npm ve yarn her projeye her paketin tam bir kopyasını koyar. modsweep hangi sürümlerin projelerinde tekrarlandığını gösterir ve seçtiklerini tek bir ortak pnpm deposuna taşır. Yalnızca iki yerel dosya eklenir ve git bunları hiç görmez; her proje önce yedeklenir ve istediğin zaman npm ya da yarn'a geri dönebilirsin.",
+    "f.analyze.name": "Analiz et",
+    "f.analyze.title": "Bir projenin neden kurulmayacağını denemeden bil",
+    "f.analyze.text": "Güncel olmayan veya iki ayrı lockfile, yanlış Node sürümü, node-sass, yeni Node'da eski webpack, webpack ayarlı Next 16, Prisma, eksik .env, Stencil mağaza sorunları. Her bulgu çözümüyle gelir.",
+    "f.scan.title": "Tüm projeleri bir bakışta gör",
+    "f.scan.text": "Her node_modules'un boyutu, paket yöneticisi, son etkinlik ve git durumu; ayrıca npm, pnpm, yarn ve bun önbelleklerin. Toplam boyut menü çubuğunda durur.",
+    "f.clean.title": "Hiçbir şey kaybetmeden yer aç",
+    "f.clean.text": "Seçtiğin node_modules klasörleri Çöp Sepeti'ne gider, Geri Al onları yerine koyar. İçinde çalışan bir Node süreci ya da git'in takip ettiği dosyalar olan klasörlere dokunulmaz.",
+    "f.verify.title": "Bir projenin hâlâ derlendiğini kontrol et",
+    "f.verify.text": "Seçili projeleri kurar; bağımlılıkları, komutları, typecheck'i, build'i ve istersen bir dev server'ı kontrol eder. Canlı log ve Durdur butonu var; sonunda her dosya yerine konur.",
+    "safety.title": "Canlı sistemlere bağlı projeler için yapıldı.",
+    "safety.lead": "Bir projeyi test etmek canlı ortama asla dokunmamalı. Bu kurallar her zaman açık.",
+    "s1.t": "Hiçbir şey push ya da deploy edilmez", "s1.d": "deploy, publish, push, migrate, vercel ya da shopify geçen script'ler test sırasında asla çalışmaz.",
+    "s2.t": "Veritabanlarına ulaşılamaz", "s2.d": ".env dosyalarındaki veritabanı, Redis ve Mongo adresleri test sırasında hiçbir yere gitmez.",
+    "s3.t": "Dosyaların geri gelir", "s3.d": "package.json, lockfile'lar ve git durumu bir test ya da taşıma öncesi yedeklenir ve sonrasında geri konur; Durdur'a bastığında da.",
+    "s4.t": "Çökmeye dayanıklı", "s4.d": "Mac ya da uygulama yarıda durursa modsweep bir sonraki açılışta, başka hiçbir şey yapmadan önce projeyi geri yükler.",
+    "s5.t": "Arkada süreç kalmaz", "s5.d": "Test sunucuları süreç ağacına ve klasöre göre durdurulur.",
+    "s6.t": "Hiçbir şey kalıcı olarak silinmez", "s6.d": "Temizle klasörleri Çöp Sepeti'ne taşır. Paylaşılan projeler istediğin zaman npm ya da yarn'a dönebilir.",
+    "install.title": "Kurulum",
+    "install.dmg": "Son sürümden DMG'yi indir, aç ve modsweep'i Applications'a sürükle. Her sürüm Developer ID ile imzalanır ve Apple tarafından notarize edilir, bu yüzden uyarısız açılır.",
+    "install.releases": "GitHub'daki tüm sürümler",
+    "install.req.title": "Gereksinimler",
+    "install.req": "macOS 14 Sonoma veya üstü. Projeleri kurup doğrulamak için pnpm gerekir; projeleri ortak depoya taşımak için pnpm 10 veya üstü. npm, yarn ve bun projelerinin hepsi desteklenir.",
+    "brew.install": "# kur", "brew.update": "# güncelle", "brew.remove": "# uygulamayı ve verilerini kaldır",
+    "privacy.title": "Gizlilik",
+    "privacy.text": "Hesap yok, analitik yok, takip yok. modsweep yalnızca sen istediğinde paket kurmak için ve açık bırakırsan analiz sırasında Stencil mağazalarını kontrol etmek için internete çıkar.",
+    "footer.disclaimer": "modsweep ücretsizdir ve olduğu gibi, garantisiz sunulur. Kullanım riski sana aittir; yedeklerini ve sürüm kontrolünü koru.",
+    "footer.read": "Sorumluluk reddini oku", "footer.rights": "Tüm hakları saklıdır.",
+    "version": "Sürüm %s"
+  },
+  de: {
+    "nav.features": "Funktionen", "nav.safety": "Sicherheit", "nav.install": "Installation",
+    "hero.title": "Jedes Paket einmal. Nicht einmal pro Projekt.",
+    "hero.lead": "modsweep ist eine Mac-App für einen Ordner voller JavaScript-Projekte. Sie zeigt, was node_modules dich kostet, findet, warum sich ein Projekt nicht installieren lässt, räumt sicher auf und lässt npm- und yarn-Projekte einen gemeinsamen pnpm-Store nutzen.",
+    "cta.download": "Für Mac laden",
+    "cta.fine": "Kostenlos, für macOS 14 Sonoma oder neuer auf Apple Silicon und Intel.",
+    "cta.brew": "Oder mit Homebrew installieren:",
+    "copy": "Kopieren", "copied": "Kopiert",
+    "sweep.store": "Gemeinsamer pnpm-Store auf diesem Mac",
+    "sweep.before": "Fünf Projekte, fünf vollständige Kopien.",
+    "sweep.after": "Eine Kopie im gemeinsamen Store.",
+    "sweep.replay": "Noch einmal", "sweep.link": "nutzt die gemeinsame Kopie",
+    "shot.projects": "Projektliste von modsweep: acht Projekte mit Größe, Problemen, Paketmanager und git-Stand",
+    "shot.sharing": "Teilen-Seite: Paketversionen, die sich in mehreren Projekten wiederholen, und der Platz mit einem gemeinsamen Store",
+    "shot.analysis": "Analyse: Befunde wie node-sass und altes webpack, jeweils mit Lösung",
+    "features.title": "Alles, was node_modules mit deiner Festplatte macht, in einem Fenster.",
+    "features.lead": "Zeig modsweep den Ordner mit deinen Projekten. Es scannt sie, erklärt sie und räumt hinter ihnen auf.",
+    "f.share.name": "Teilen",
+    "f.share.title": "Jede Paketversion nur einmal speichern",
+    "f.share.text": "npm und yarn legen in jedes Projekt eine vollständige Kopie jedes Pakets. modsweep zeigt, welche Versionen sich wiederholen, und verschiebt die ausgewählten Projekte in einen gemeinsamen pnpm-Store. Nur zwei lokale Dateien kommen hinzu, git sieht sie nie, jedes Projekt wird vorher gesichert, und du kannst jederzeit zu npm oder yarn zurück.",
+    "f.analyze.name": "Analysieren",
+    "f.analyze.title": "Wissen, warum ein Projekt nicht installiert, bevor du es versuchst",
+    "f.analyze.text": "Lockfiles nicht synchron oder doppelt, falsche Node-Version, node-sass, altes webpack auf neuem Node, Next 16 mit webpack-Konfiguration, Prisma, fehlende .env, Probleme mit Stencil-Shops. Jeder Befund kommt mit seiner Lösung.",
+    "f.scan.title": "Alle Projekte auf einen Blick",
+    "f.scan.text": "Größe jedes node_modules, Paketmanager, letzte Aktivität und git-Stand, dazu deine npm-, pnpm-, yarn- und bun-Caches. Die Summe steht in der Menüleiste.",
+    "f.clean.title": "Platz schaffen, ohne etwas zu verlieren",
+    "f.clean.text": "Die gewählten node_modules-Ordner kommen in den Papierkorb, Widerrufen legt sie zurück. Ordner mit laufendem Node-Prozess oder von git verfolgten Dateien bleiben unangetastet.",
+    "f.verify.title": "Prüfen, ob ein Projekt noch baut",
+    "f.verify.text": "Installiert die ausgewählten Projekte und prüft Abhängigkeiten, Befehle, Typecheck, Build und optional einen Dev-Server, mit Live-Log und Stopp-Taste. Danach wird jede Datei zurückgelegt.",
+    "safety.title": "Gemacht für Projekte, die an echten Systemen hängen.",
+    "safety.lead": "Ein Projekt zu testen darf nie die Produktion berühren. Diese Regeln gelten immer.",
+    "s1.t": "Nichts wird gepusht oder deployt", "s1.d": "Skripte, die deploy, publish, push, migrate, vercel oder shopify erwähnen, laufen während eines Tests nie.",
+    "s2.t": "Datenbanken bleiben unerreichbar", "s2.d": "Datenbank-, Redis- und Mongo-Adressen aus .env-Dateien zeigen während eines Tests ins Leere.",
+    "s3.t": "Deine Dateien kommen zurück", "s3.d": "package.json, Lockfiles und der git-Stand werden vor einem Test oder Umzug gesichert und danach wiederhergestellt, auch wenn du Stopp drückst.",
+    "s4.t": "Absturzsicher", "s4.d": "Hält der Mac oder die App mittendrin an, stellt modsweep das Projekt beim nächsten Start wieder her, bevor es irgendetwas anderes tut.",
+    "s5.t": "Kein Prozess bleibt zurück", "s5.d": "Testserver werden über den Prozessbaum und den Ordner beendet.",
+    "s6.t": "Nichts wird endgültig gelöscht", "s6.d": "Aufräumen legt Ordner in den Papierkorb. Geteilte Projekte können jederzeit zu npm oder yarn zurück.",
+    "install.title": "Installation",
+    "install.dmg": "Lade das DMG der neuesten Version, öffne es und zieh modsweep in Programme. Jede Version ist mit Developer ID signiert und von Apple notarisiert, sie öffnet also ohne Warnungen.",
+    "install.releases": "Alle Versionen auf GitHub",
+    "install.req.title": "Voraussetzungen",
+    "install.req": "macOS 14 Sonoma oder neuer. Zum Installieren und Prüfen von Projekten braucht es pnpm, zum Verschieben in den gemeinsamen Store pnpm 10 oder neuer. npm-, yarn- und bun-Projekte werden alle unterstützt.",
+    "brew.install": "# installieren", "brew.update": "# aktualisieren", "brew.remove": "# App und Daten entfernen",
+    "privacy.title": "Datenschutz",
+    "privacy.text": "Kein Konto, keine Analyse, kein Tracking. modsweep geht nur online, um auf deinen Wunsch Pakete zu installieren und, wenn eingeschaltet, um bei einer Analyse Stencil-Shops zu prüfen.",
+    "footer.disclaimer": "modsweep ist kostenlos und wird ohne Gewähr bereitgestellt. Die Nutzung erfolgt auf eigene Gefahr; halte Backups und Versionskontrolle bereit.",
+    "footer.read": "Haftungsausschluss lesen", "footer.rights": "Alle Rechte vorbehalten.",
+    "version": "Version %s"
+  },
+  es: {
+    "nav.features": "Funciones", "nav.safety": "Seguridad", "nav.install": "Instalar",
+    "hero.title": "Una copia de cada paquete. No una por proyecto.",
+    "hero.lead": "modsweep es una app para Mac pensada para una carpeta llena de proyectos JavaScript. Muestra lo que te cuesta node_modules, averigua por qué un proyecto no se instala, limpia con seguridad y permite que los proyectos npm y yarn compartan un único almacén pnpm.",
+    "cta.download": "Descargar para Mac",
+    "cta.fine": "Gratis, para macOS 14 Sonoma o posterior en Apple Silicon e Intel.",
+    "cta.brew": "O instálala con Homebrew:",
+    "copy": "Copiar", "copied": "Copiado",
+    "sweep.store": "Almacén pnpm compartido en este Mac",
+    "sweep.before": "Cinco proyectos, cinco copias completas.",
+    "sweep.after": "Una sola copia en el almacén compartido.",
+    "sweep.replay": "Repetir", "sweep.link": "usa la copia compartida",
+    "shot.projects": "Lista de proyectos de modsweep: ocho proyectos con tamaño, problemas, gestor de paquetes y estado de git",
+    "shot.sharing": "Página Compartir: versiones de paquetes repetidas entre proyectos y el espacio con un almacén compartido",
+    "shot.analysis": "Análisis: hallazgos como node-sass y webpack antiguo, cada uno con su solución",
+    "features.title": "Todo lo que node_modules hace con tu disco, en una ventana.",
+    "features.lead": "Indica a modsweep la carpeta donde están tus proyectos. Los analiza, los explica y limpia lo que dejan.",
+    "f.share.name": "Compartir",
+    "f.share.title": "Guarda cada versión de un paquete una sola vez",
+    "f.share.text": "npm y yarn ponen una copia completa de cada paquete en cada proyecto. modsweep muestra qué versiones se repiten y mueve los proyectos que elijas a un único almacén pnpm compartido. Solo se añaden dos archivos locales que git nunca ve, cada proyecto se respalda antes y puedes volver a npm o yarn cuando quieras.",
+    "f.analyze.name": "Analizar",
+    "f.analyze.title": "Sabe por qué un proyecto no se instalará antes de intentarlo",
+    "f.analyze.text": "Lockfiles desincronizados o duplicados, la versión de Node equivocada, node-sass, webpack antiguo con Node nuevo, Next 16 con configuración de webpack, Prisma, falta de .env, problemas de tiendas Stencil. Cada hallazgo trae su solución.",
+    "f.scan.title": "Todos tus proyectos de un vistazo",
+    "f.scan.text": "Tamaño de cada node_modules, gestor de paquetes, última actividad y estado de git, además de tus cachés de npm, pnpm, yarn y bun. El total aparece en la barra de menús.",
+    "f.clean.title": "Libera espacio sin perder nada",
+    "f.clean.text": "Las carpetas node_modules que elijas van a la Papelera y Deshacer las devuelve. No se tocan carpetas con un proceso de Node en marcha ni con archivos versionados en git.",
+    "f.verify.title": "Comprueba que un proyecto sigue compilando",
+    "f.verify.text": "Instala los proyectos seleccionados y comprueba dependencias, comandos, typecheck, build y, si quieres, un servidor de desarrollo, con log en vivo y botón Detener. Al final se devuelve cada archivo.",
+    "safety.title": "Hecho para proyectos conectados a sistemas reales.",
+    "safety.lead": "Probar un proyecto nunca debe tocar producción. Estas reglas están siempre activas.",
+    "s1.t": "No se hace push ni deploy de nada", "s1.d": "Los scripts que mencionan deploy, publish, push, migrate, vercel o shopify nunca se ejecutan durante una prueba.",
+    "s2.t": "Las bases de datos quedan fuera de alcance", "s2.d": "Las direcciones de bases de datos, Redis y Mongo de los archivos .env no apuntan a ninguna parte durante una prueba.",
+    "s3.t": "Tus archivos vuelven", "s3.d": "package.json, los lockfiles y el estado de git se respaldan antes de una prueba o un traslado y se restauran después, también si pulsas Detener.",
+    "s4.t": "A prueba de fallos", "s4.d": "Si el Mac o la app se detienen a medias, modsweep restaura el proyecto en el siguiente arranque antes de hacer cualquier otra cosa.",
+    "s5.t": "No queda ningún proceso", "s5.d": "Los servidores de prueba se detienen por árbol de procesos y por carpeta.",
+    "s6.t": "Nada se borra para siempre", "s6.d": "Limpiar mueve las carpetas a la Papelera. Los proyectos compartidos pueden volver a npm o yarn cuando quieras.",
+    "install.title": "Instalar",
+    "install.dmg": "Descarga el DMG de la última versión, ábrelo y arrastra modsweep a Aplicaciones. Cada versión está firmada con Developer ID y notarizada por Apple, así que se abre sin avisos.",
+    "install.releases": "Todas las versiones en GitHub",
+    "install.req.title": "Requisitos",
+    "install.req": "macOS 14 Sonoma o posterior. Instalar y verificar proyectos requiere pnpm; moverlos al almacén compartido, pnpm 10 o posterior. Se admiten proyectos npm, yarn y bun.",
+    "brew.install": "# instalar", "brew.update": "# actualizar", "brew.remove": "# quitar la app y sus datos",
+    "privacy.title": "Privacidad",
+    "privacy.text": "Sin cuenta, sin analíticas, sin rastreo. modsweep solo se conecta para instalar paquetes cuando se lo pides y, si lo dejas activado, para comprobar tiendas Stencil durante un análisis.",
+    "footer.disclaimer": "modsweep es gratuito y se ofrece tal cual, sin garantía. Lo usas bajo tu propio riesgo; mantén copias de seguridad y control de versiones.",
+    "footer.read": "Leer el descargo de responsabilidad", "footer.rights": "Todos los derechos reservados.",
+    "version": "Versión %s"
+  }
+};
+const EN_EXTRA = {
+  "copied": "Copied", "sweep.after": "One copy in the shared store.", "version": "Version %s",
+  "shot.projects": "modsweep project list: eight projects with size, issues, package manager and git state",
+  "shot.sharing": "Sharing page: package versions repeated across projects and the space left with one shared store",
+  "shot.analysis": "Analysis: findings like node-sass and old webpack, each with its fix"
+};
+const DISCLAIMER = { en: "DISCLAIMER.md", tr: "DISCLAIMER.tr.md", de: "DISCLAIMER.de.md", es: "DISCLAIMER.es.md" };
+
+// English is the markup itself; remember it so switching back works
+document.querySelectorAll("[data-i18n]").forEach(el => { T.en[el.dataset.i18n] = el.innerHTML; });
+Object.assign(T.en, EN_EXTRA);
+
+let lang = "en", version = "";
+const t = key => (T[lang] && T[lang][key]) || T.en[key] || "";
+
+function apply(next) {
+  lang = T[next] ? next : "en";
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-alt]").forEach(el => { el.alt = t(el.dataset.i18nAlt); });
+  document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  document.getElementById("disclaimer").href = "https://github.com/caglarergul/modsweep-macos/blob/main/" + DISCLAIMER[lang];
+  document.getElementById("sweep-caption").textContent = t(sweep.classList.contains("done") ? "sweep.after" : "sweep.before");
+  if (version) document.getElementById("version").textContent = t("version").replace("%s", version);
+  try { localStorage.setItem("modsweep-lang", lang); } catch (e) {}
+}
+
+document.querySelectorAll(".langs button").forEach(b => b.addEventListener("click", () => apply(b.dataset.lang)));
+
+document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent);
+    b.textContent = t("copied");
+    setTimeout(() => { b.textContent = t("copy"); }, 1600);
+  } catch (e) {}
+}));
+
+// the one animation on the page: five copies fold into the shared store
+const sweep = document.getElementById("sweep");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function fold(done) {
+  sweep.classList.toggle("done", done);
+  document.getElementById("sweep-size").textContent = done ? "4.2 MB" : "21 MB";
+  document.getElementById("sweep-caption").textContent = t(done ? "sweep.after" : "sweep.before");
+}
+document.getElementById("replay").addEventListener("click", () => {
+  fold(false);
+  setTimeout(() => fold(true), reduced ? 0 : 900);
+});
+
+let saved = null;
+try { saved = localStorage.getItem("modsweep-lang"); } catch (e) {}
+const browser = (navigator.language || "en").slice(0, 2).toLowerCase();
+const asked = new URLSearchParams(location.search).get("lang");
+apply(asked || saved || browser);
+if (reduced) fold(true); else setTimeout(() => fold(true), 1400);
+
+// latest version and a direct DMG link; the release page stays as the fallback
+fetch("https://api.github.com/repos/caglarergul/modsweep-macos/releases/latest")
+  .then(r => r.ok ? r.json() : null)
+  .then(release => {
+    if (!release) return;
+    version = (release.tag_name || "").replace(/^v/, "");
+    const dmg = (release.assets || []).find(a => a.name.endsWith(".dmg"));
+    if (dmg) document.getElementById("download").href = dmg.browser_download_url;
+    if (version) document.getElementById("version").textContent = t("version").replace("%s", version);
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>

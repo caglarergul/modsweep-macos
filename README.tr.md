@@ -12,6 +12,7 @@ JavaScript projelerindeki <code>node_modules</code> klasörlerini bul, analiz et
 
 <p align="center">
   <a href="https://github.com/caglarergul/modsweep-macos/releases/latest"><b>Son sürümü indir</b></a>
+  · <a href="https://caglarergul.github.io/modsweep-macos/?lang=tr">Web sitesi</a>
   · macOS 14 Sonoma ve sonrası · Apple Silicon ve Intel
 </p>
 

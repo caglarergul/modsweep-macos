@@ -12,6 +12,7 @@ Encuentra, analiza y limpia con seguridad los <code>node_modules</code> de tus p
 
 <p align="center">
   <a href="https://github.com/caglarergul/modsweep-macos/releases/latest"><b>Descargar la última versión</b></a>
+  · <a href="https://caglarergul.github.io/modsweep-macos/?lang=es">Sitio web</a>
   · macOS 14 Sonoma o posterior · Apple Silicon e Intel
 </p>
 

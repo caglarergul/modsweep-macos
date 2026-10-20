@@ -12,6 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/caglarergul/modsweep-macos/releases/latest"><b>Neueste Version herunterladen</b></a>
+  · <a href="https://caglarergul.github.io/modsweep-macos/?lang=de">Website</a>
   · macOS 14 Sonoma oder neuer · Apple Silicon und Intel
 </p>
 

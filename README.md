@@ -12,6 +12,7 @@ Find, analyze and safely clean <code>node_modules</code> in your JavaScript proj
 
 <p align="center">
   <a href="https://github.com/caglarergul/modsweep-macos/releases/latest"><b>Download the latest version</b></a>
+  · <a href="https://caglarergul.github.io/modsweep-macos/">Website</a>
   · macOS 14 Sonoma or later · Apple Silicon and Intel
 </p>
 
