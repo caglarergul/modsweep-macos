@@ -306,7 +306,7 @@ footer p { margin: 0; max-width: 46em; }
         </div>
         <div>
           <h3 data-i18n="f.clean.title">Free space without losing anything</h3>
-          <p data-i18n="f.clean.text">The node_modules folders you pick go to the Trash, and Undo puts them back. Folders with a running Node process or files tracked by git are left alone.</p>
+          <p data-i18n="f.clean.text">The node_modules folders and build caches (.next, .turbo, .angular, ios/build …) you pick go to the Trash, and Undo puts them back. Folders with a running Node process or files tracked by git are left alone.</p>
         </div>
         <div>
           <h3 data-i18n="f.verify.title">Check that a project still builds</h3>
@@ -397,7 +397,7 @@ const T = {
     "f.scan.title": "Tüm projeleri bir bakışta gör",
     "f.scan.text": "Her node_modules'un boyutu, paket yöneticisi, son etkinlik ve git durumu; ayrıca npm, pnpm, yarn ve bun önbelleklerin. Toplam boyut menü çubuğunda durur.",
     "f.clean.title": "Hiçbir şey kaybetmeden yer aç",
-    "f.clean.text": "Seçtiğin node_modules klasörleri Çöp Sepeti'ne gider, Geri Al onları yerine koyar. İçinde çalışan bir Node süreci ya da git'in takip ettiği dosyalar olan klasörlere dokunulmaz.",
+    "f.clean.text": "Seçtiğin node_modules klasörleri ve derleme önbellekleri (.next, .turbo, .angular, ios/build …) Çöp Kutusu'na gider, Geri Al onları yerine koyar. İçinde çalışan bir Node süreci ya da git'in takip ettiği dosyalar olan klasörlere dokunulmaz.",
     "f.verify.title": "Bir projenin hâlâ derlendiğini kontrol et",
     "f.verify.text": "Seçili projeleri kurar; bağımlılıkları, komutları, typecheck'i, build'i ve istersen bir dev server'ı kontrol eder. Canlı log ve Durdur butonu var; sonunda her dosya yerine konur.",
     "safety.title": "Canlı sistemlere bağlı projeler için yapıldı.",
@@ -407,7 +407,7 @@ const T = {
     "s3.t": "Dosyaların geri gelir", "s3.d": "package.json, lockfile'lar ve git durumu bir test ya da taşıma öncesi yedeklenir ve sonrasında geri konur; Durdur'a bastığında da.",
     "s4.t": "Çökmeye dayanıklı", "s4.d": "Mac ya da uygulama yarıda durursa modsweep bir sonraki açılışta, başka hiçbir şey yapmadan önce projeyi geri yükler.",
     "s5.t": "Arkada süreç kalmaz", "s5.d": "Test sunucuları süreç ağacına ve klasöre göre durdurulur.",
-    "s6.t": "Hiçbir şey kalıcı olarak silinmez", "s6.d": "Temizle klasörleri Çöp Sepeti'ne taşır. Paylaşılan projeler istediğin zaman npm ya da yarn'a dönebilir.",
+    "s6.t": "Hiçbir şey kalıcı olarak silinmez", "s6.d": "Temizle klasörleri Çöp Kutusu'na taşır. Paylaşılan projeler istediğin zaman npm ya da yarn'a dönebilir.",
     "install.title": "Kurulum",
     "install.dmg": "Son sürümden DMG'yi indir, aç ve modsweep'i Applications'a sürükle. Her sürüm Developer ID ile imzalanır ve Apple tarafından notarize edilir, bu yüzden uyarısız açılır.",
     "install.releases": "GitHub'daki tüm sürümler",
@@ -446,7 +446,7 @@ const T = {
     "f.scan.title": "Alle Projekte auf einen Blick",
     "f.scan.text": "Größe jedes node_modules, Paketmanager, letzte Aktivität und git-Stand, dazu deine npm-, pnpm-, yarn- und bun-Caches. Die Summe steht in der Menüleiste.",
     "f.clean.title": "Platz schaffen, ohne etwas zu verlieren",
-    "f.clean.text": "Die gewählten node_modules-Ordner kommen in den Papierkorb, Widerrufen legt sie zurück. Ordner mit laufendem Node-Prozess oder von git verfolgten Dateien bleiben unangetastet.",
+    "f.clean.text": "Die gewählten node_modules-Ordner und Build-Caches (.next, .turbo, .angular, ios/build …) kommen in den Papierkorb, Widerrufen legt sie zurück. Ordner mit laufendem Node-Prozess oder von git verfolgten Dateien bleiben unangetastet.",
     "f.verify.title": "Prüfen, ob ein Projekt noch baut",
     "f.verify.text": "Installiert die ausgewählten Projekte und prüft Abhängigkeiten, Befehle, Typecheck, Build und optional einen Dev-Server, mit Live-Log und Stopp-Taste. Danach wird jede Datei zurückgelegt.",
     "safety.title": "Gemacht für Projekte, die an echten Systemen hängen.",
@@ -495,7 +495,7 @@ const T = {
     "f.scan.title": "Todos tus proyectos de un vistazo",
     "f.scan.text": "Tamaño de cada node_modules, gestor de paquetes, última actividad y estado de git, además de tus cachés de npm, pnpm, yarn y bun. El total aparece en la barra de menús.",
     "f.clean.title": "Libera espacio sin perder nada",
-    "f.clean.text": "Las carpetas node_modules que elijas van a la Papelera y Deshacer las devuelve. No se tocan carpetas con un proceso de Node en marcha ni con archivos versionados en git.",
+    "f.clean.text": "Las carpetas node_modules y las cachés de build (.next, .turbo, .angular, ios/build …) que elijas van a la Papelera y Deshacer las devuelve. No se tocan carpetas con un proceso de Node en marcha ni con archivos versionados en git.",
     "f.verify.title": "Comprueba que un proyecto sigue compilando",
     "f.verify.text": "Instala los proyectos seleccionados y comprueba dependencias, comandos, typecheck, build y, si quieres, un servidor de desarrollo, con log en vivo y botón Detener. Al final se devuelve cada archivo.",
     "safety.title": "Hecho para proyectos conectados a sistemas reales.",
