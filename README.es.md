@@ -24,6 +24,10 @@ Encuentra, analiza y limpia con seguridad los <code>node_modules</code> de tus p
 ábrelo y arrastra **modsweep** a **Aplicaciones**. Cada versión está firmada con Developer ID y notarizada por Apple,
 así que se abre sin avisos.
 
+**Actualizaciones:** desde la 1.4.0, modsweep se actualiza solo. Lo comprueba una vez al día, descarga la nueva
+versión de GitHub Releases, verifica sus firmas y se reemplaza. **modsweep → Buscar actualizaciones…** lo comprueba
+al momento; la comprobación diaria y la instalación automática se pueden desactivar en Ajustes.
+
 **Homebrew:**
 
 ```bash

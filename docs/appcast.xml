@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>modsweep</title>
+    <link>https://github.com/caglarergul/modsweep-macos</link>
+    <item>
+      <title>modsweep 1.4.0</title>
+      <pubDate>Tue, 27 Oct 2026 08:31:02 +0000</pubDate>
+      <sparkle:version>1.4.0</sparkle:version>
+      <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:fullReleaseNotesLink>https://github.com/caglarergul/modsweep-macos/releases/tag/v1.4.0</sparkle:fullReleaseNotesLink>
+      <description><![CDATA[
+<p><b>modsweep 1.4.0 — automatic updates</b></p>
+<ul>
+<li><b>Updates install themselves:</b> modsweep checks for a new version once a day, downloads it from GitHub Releases, checks its signatures and replaces itself, so you no longer download DMGs by hand</li>
+<li><b>modsweep → Check for Updates…</b> looks right away; Settings let you turn the daily check and automatic installs on or off</li>
+<li>An update never restarts the app while a clean, verify or share is running; it waits until the work is done</li>
+</ul>
+      ]]></description>
+      <enclosure url="https://github.com/caglarergul/modsweep-macos/releases/download/v1.4.0/modsweep-1.4.0.dmg"
+                 length="5919647" type="application/octet-stream" sparkle:edSignature="/VPEwgnA5aoNT2Ne2vTYXwho8eLc/3SQsA3ObIDecgMrCsE9/sX9IbSCIPns3JRTQ0djE1boa/5uv1yW5UmWDQ=="/>
+    </item>
+  </channel>
+</rss>

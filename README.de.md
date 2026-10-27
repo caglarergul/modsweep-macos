@@ -24,6 +24,10 @@
 öffne sie und ziehe **modsweep** in **Programme**. Jede Version ist mit Developer ID signiert und von Apple notarisiert
 und öffnet sich ohne Warnung.
 
+**Updates:** ab 1.4.0 aktualisiert sich modsweep selbst. Es prüft einmal am Tag, lädt die neue Version von GitHub
+Releases, prüft ihre Signaturen und ersetzt sich. **modsweep → Nach Updates suchen …** prüft sofort; die tägliche
+Prüfung und automatische Installation lassen sich in den Einstellungen abschalten.
+
 **Homebrew:**
 
 ```bash

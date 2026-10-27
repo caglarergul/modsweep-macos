@@ -24,6 +24,10 @@ Find, analyze and safely clean <code>node_modules</code> in your JavaScript proj
 open it and drag **modsweep** to **Applications**. Every build is signed with Developer ID and notarized by Apple, so
 it opens without warnings.
 
+**Updates:** from 1.4.0 on, modsweep updates itself. It checks once a day, downloads the new version from GitHub
+Releases, checks its signatures and replaces itself. Use **modsweep → Check for Updates…** to look right away; the
+daily check and automatic installs can be turned off in Settings.
+
 **Homebrew:**
 
 ```bash

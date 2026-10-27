@@ -24,6 +24,10 @@ JavaScript projelerindeki <code>node_modules</code> klasörlerini bul, analiz et
 dosyasını indir, aç ve **modsweep**'i **Uygulamalar** klasörüne sürükle. Her sürüm Developer ID ile imzalı ve Apple
 tarafından notarize edilmiştir; uyarısız açılır.
 
+**Güncellemeler:** 1.4.0'dan itibaren modsweep kendini günceller. Günde bir kez denetler, yeni sürümü GitHub
+Releases'ten indirir, imzalarını kontrol eder ve kendini değiştirir. Hemen bakmak için **modsweep → Güncellemeleri
+Denetle…**; günlük denetim ve otomatik kurulum Ayarlar'dan kapatılabilir.
+
 **Homebrew:**
 
 ```bash
